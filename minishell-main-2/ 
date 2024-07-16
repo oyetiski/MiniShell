@@ -1,0 +1,208 @@
+pipe.c - one command
+[ INFO ] Token
+{
+	.type = HEAD,
+	.text = ,
+	.adress = 0x16b8db138,
+	.next = 0x10493dd58,
+	.prev = 0x0
+}
+[ INFO ] Token
+{
+	.type = HEAD,
+	.text = Ù“,
+	.adress = 0x10493dd58,
+	.next = 0x1550040f0,
+	.prev = 0x1f492b880
+}
+[ INFO ] Token
+{
+	.type = WORD,
+	.text = cat,
+	.adress = 0x1550040f0,
+	.next = 0x155004150,
+	.prev = 0x10493dd58
+}
+[ INFO ] Token
+{
+	.type = APPEND,
+	.text = >>,
+	.adress = 0x155004150,
+	.next = 0x1550041b0,
+	.prev = 0x1550040f0
+}
+[ INFO ] Token
+{
+	.type = WORD,
+	.text = a.txt,
+	.adress = 0x1550041b0,
+	.next = 0x1550041e0,
+	.prev = 0x155004150
+}
+[ INFO ] Token
+{
+	.type = TAIL,
+	.text = newLine,
+	.adress = 0x1550041e0,
+	.next = 0x0,
+	.prev = 0x1550041b0
+}
+adsd,dadsada
+sdadasasdpipe.c - one command
+[ INFO ] Token
+{
+	.type = HEAD,
+	.text = ,
+	.adress = 0x16b87b138,
+	.next = 0x10499dd58,
+	.prev = 0x0
+}
+[ INFO ] Token
+{
+	.type = HEAD,
+	.text = Ù™,
+	.adress = 0x10499dd58,
+	.next = 0x14460c750,
+	.prev = 0x1f492b880
+}
+[ INFO ] Token
+{
+	.type = WORD,
+	.text = wc,
+	.adress = 0x14460c750,
+	.next = 0x14460c7b0,
+	.prev = 0x10499dd58
+}
+[ INFO ] Token
+{
+	.type = WORD,
+	.text = -l,
+	.adress = 0x14460c7b0,
+	.next = 0x14460c810,
+	.prev = 0x14460c750
+}
+[ INFO ] Token
+{
+	.type = APPEND,
+	.text = >>,
+	.adress = 0x14460c810,
+	.next = 0x14460c870,
+	.prev = 0x14460c7b0
+}
+[ INFO ] Token
+{
+	.type = WORD,
+	.text = a.txt,
+	.adress = 0x14460c870,
+	.next = 0x14460c8a0,
+	.prev = 0x14460c810
+}
+[ INFO ] Token
+{
+	.type = TAIL,
+	.text = newLine,
+	.adress = 0x14460c8a0,
+	.next = 0x0,
+	.prev = 0x14460c870
+}
+       1 a.txt
+pipe.c - one command
+[ INFO ] Token
+{
+	.type = HEAD,
+	.text = ,
+	.adress = 0x16f59f138,
+	.next = 0x100c79d58,
+	.prev = 0x0
+}
+[ INFO ] Token
+{
+	.type = HEAD,
+	.text = ™Ç,
+	.adress = 0x100c79d58,
+	.next = 0x14ce0c750,
+	.prev = 0x1f492b880
+}
+[ INFO ] Token
+{
+	.type = WORD,
+	.text = ls,
+	.adress = 0x14ce0c750,
+	.next = 0x14ce0c7b0,
+	.prev = 0x100c79d58
+}
+[ INFO ] Token
+{
+	.type = APPEND,
+	.text = >>,
+	.adress = 0x14ce0c7b0,
+	.next = 0x14ce0c810,
+	.prev = 0x14ce0c750
+}
+[ INFO ] Token
+{
+	.type = WORD,
+	.text = a.txt,
+	.adress = 0x14ce0c810,
+	.next = 0x14ce0c840,
+	.prev = 0x14ce0c7b0
+}
+[ INFO ] Token
+{
+	.type = TAIL,
+	.text = newLine,
+	.adress = 0x14ce0c840,
+	.next = 0x0,
+	.prev = 0x14ce0c810
+}
+a.txt
+pipe.c - one command
+[ INFO ] Token
+{
+	.type = HEAD,
+	.text = ,
+	.adress = 0x16f79b138,
+	.next = 0x100a7dd58,
+	.prev = 0x0
+}
+[ INFO ] Token
+{
+	.type = HEAD,
+	.text = Ù§,
+	.adress = 0x100a7dd58,
+	.next = 0x141e0aef0,
+	.prev = 0x1f492b880
+}
+[ INFO ] Token
+{
+	.type = WORD,
+	.text = ls,
+	.adress = 0x141e0aef0,
+	.next = 0x141e0af50,
+	.prev = 0x100a7dd58
+}
+[ INFO ] Token
+{
+	.type = APPEND,
+	.text = >>,
+	.adress = 0x141e0af50,
+	.next = 0x141e0afb0,
+	.prev = 0x141e0aef0
+}
+[ INFO ] Token
+{
+	.type = WORD,
+	.text = a.txt,
+	.adress = 0x141e0afb0,
+	.next = 0x141e0afe0,
+	.prev = 0x141e0af50
+}
+[ INFO ] Token
+{
+	.type = TAIL,
+	.text = newLine,
+	.adress = 0x141e0afe0,
+	.next = 0x0,
+	.prev = 0x141e0afb0
+}
+a.txt

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   argv.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: buozcan <buozcan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: bgrhnzcn <bgrhnzcn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/12 11:42:22 by buozcan           #+#    #+#             */
-/*   Updated: 2024/07/12 12:41:05 by buozcan          ###   ########.fr       */
+/*   Updated: 2024/07/15 18:00:45 by bgrhnzcn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,10 @@ void	remove_whitespaces(t_token *token_list)
 	t_token	*temp;
 
 	temp = token_list;
-	while (temp->next->type != TAIL)
+	while (temp->next != NULL)
 	{
 		if (temp->next->type == WHITESPACE)
-			remove_token(token_list, temp->next);
+			destroy_token(remove_token(token_list, temp->next));
 		else
 			temp = temp->next;
 	}
@@ -51,19 +51,19 @@ char	**create_argv(t_token *token_list)
 
 	temp = token_list;
 	counter = 0;
-	argv_size = get_argv_size(token_list);
-	printf("%d\n", argv_size);
+	argv_size = get_argv_size(token_list) + 1;
 	argv = malloc(argv_size * sizeof (char *));
 	if (argv == NULL)
 		return (NULL);
-	while (counter < argv_size)
+	while (counter < argv_size && temp != NULL)
 	{
 		if (temp->type == WORD)
 		{
-			argv[counter] = temp->text;
+			argv[counter] = ft_strdup(temp->text);
 			counter++;
 		}
 		temp = temp->next;
 	}
+	argv[counter] = NULL;
 	return (argv);
 }

@@ -14,14 +14,17 @@ SRCS = $(SRC)/main.c \
 	$(SRC)/builtins/unset.c \
 	$(SRC)/builtins/export.c \
 	$(SRC)/parse/token.c \
+	$(SRC)/parse/token2.c \
 	$(SRC)/parse/tokenizer.c \
 	$(SRC)/debug/debug.c \
 	$(SRC)/parse/quotes.c \
+	$(SRC)/parse/syntax.c \
 	$(SRC)/parse/expansion.c \
 	$(SRC)/parse/argv.c \
-	$(SRC)/pipe/pipe.c\
-	$(SRC)/heredoc/heredoc.c\
-
+	$(SRC)/parse/commands.c \
+	$(SRC)/io_operations/pipe.c \
+	$(SRC)/io_operations/redirections.c \
+	$(SRC)/exec/exec.c \
 
 OBJS = $(SRCS:.c=.o)
 
@@ -42,7 +45,7 @@ $(LIBFT):
 
 clean:
 	cd $(SRC) && rm -rf builtins/*.o debug/*.o \
-				parse/*.o pipe/*.o string/*.o *.o heredoc/*.o
+			parse/*.o io_operations/*.o string/*.o exec/*.o *.o
 	make -C libft fclean
 
 fclean: clean

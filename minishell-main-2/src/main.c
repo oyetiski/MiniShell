@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: olyetisk <olyetisk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: olcayyetiskin <olcayyetiskin@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/17 22:16:19 by bgrhnzcn          #+#    #+#             */
-/*   Updated: 2024/07/12 16:24:04 by olyetisk         ###   ########.fr       */
+/*   Updated: 2024/07/16 14:11:09 by olcayyetisk      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,50 +63,6 @@ char	*get_input(t_shell *shell)
 	return (input);
 }
 
-int	buildins(t_shell *shell, char **argv)
-{
-	if (ft_strequ(argv[0], "exit"))
-		mini_exit(shell, EXIT_SUCCESS);
-	if (ft_strequ(argv[0], "env"))
-		mini_env(shell->env);
-	else if (ft_strequ(argv[0], "pwd"))
-		mini_pwd(shell->env);
-	else if (ft_strequ(argv[0], "cd"))
-		mini_cd(shell->env, argv[1]);
-	else if (ft_strequ(argv[0], "export"))
-		mini_export(shell, argv);
-	else if (ft_strequ(argv[0], "unset"))
-		mini_unset(shell, argv[1]);
-	else
-		return (1);
-	return (0);
-}
-
-void	executer(t_shell *shell, char **argv)
-{
-	char	**paths;
-	char	*test;
-
-	if (!buildins(shell, argv))
-		return ;
-	else
-	{
-		paths = ft_split(get_env(shell->env, "PATH"), ':');
-		test = ft_calloc(300, sizeof (char));
-		ft_strlcat(test, "/bin/", 300);
-		ft_strlcat(test, argv[0], 300);
-		shell->pid = fork();
-		if (shell->pid == 0)
-		{
-			if (execve(test, argv, shell->env))
-				printf("%s: %s\n", "minishell", strerror(errno));
-			ft_free_str_arr(argv);
-			exit(EXIT_SUCCESS);
-		}
-		else
-			wait(NULL);
-	}
-}
 
 int	main(int argc, char **argv, char **envp)
 {
@@ -125,18 +81,21 @@ int	main(int argc, char **argv, char **envp)
 		input_trimmed = ft_strtrim(shell.input, g_whitespaces);
 		parse_input(&shell.token_list, input_trimmed);
 		check_quotes(&shell.token_list);
-		perform_expansion(&shell.token_list, shell.env);
+		//found_input(&shell);
 		free(input_trimmed);
+		if (check_syntax(&shell.token_list, shell.env) == error)
+		{
+			clear_tokens(&shell.token_list);
+			continue ;
+		}
+		perform_expansion(&shell.token_list, shell.env);
 		join_cont_words(&shell.token_list);
 		remove_whitespaces(&shell.token_list);
-		found_pipe(&shell.token_list);
-		print_tokens(&shell.token_list);
 		found_output(&shell);
-		//shell.argv = create_argv(shell.token_list.next);
-		//if (shell.input[0] == '\0')
-		//	;
-		//else
-		//	executer(&shell, shell.argv);
+		if (pipe_check(&shell.token_list) != error)
+			print_tokens(&shell.token_list);
+		shell.argv = create_argv(shell.token_list.next);
+		executer(&shell, shell.argv);
 		clear_tokens(&shell.token_list);
 	}
 	free(shell.input);

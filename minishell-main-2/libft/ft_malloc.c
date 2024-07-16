@@ -1,27 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strtrim.c                                       :+:      :+:    :+:   */
+/*   ft_malloc.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: buozcan <buozcan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: bgrhnzcn <bgrhnzcn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/10/13 14:32:03 by buozcan           #+#    #+#             */
-/*   Updated: 2023/10/21 19:36:56 by buozcan          ###   ########.fr       */
+/*   Created: 2024/04/29 16:20:29 by bgrhnzcn          #+#    #+#             */
+/*   Updated: 2024/07/14 10:51:06 by bgrhnzcn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char	*ft_strtrim(char const *s1, char const *set)
+void	*ft_malloc(size_t nmemb, size_t size)
 {
-	size_t	ll;
+	void	*allocated;
 
-	if (!s1 || !set)
-		return (0);
-	while (*s1 && ft_strchr(set,*s1))
-		s1++;
-	ll = ft_strlen(s1);
-	while (ll && ft_strchr(set, s1[ll - 1]))
-		ll--;
-	return (ft_substr(s1, 0, ll));
+	allocated = malloc(nmemb * size);
+	if (allocated == NULL)
+		return (NULL);
+	return (allocated);
 }
