@@ -6,7 +6,7 @@
 /*   By: olyetisk <olyetisk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 22:45:16 by bgrhnzcn          #+#    #+#             */
-/*   Updated: 2024/08/21 18:44:06 by olyetisk         ###   ########.fr       */
+/*   Updated: 2024/08/22 16:40:16 by olyetisk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -565,6 +565,11 @@ void	mini_export(t_shell *shell, char **argv);
  * @param argv The array of arguments.
  */
 void	mini_unset(t_shell *shell, char **argv);
+char	**create_env_variable(t_shell *shell, const char *arg, int *found);
+void 	remove_env(t_shell *shell, const char *arg);
+int		count_env_variables(char **env);
+size_t	counter_argv(char *str);
+char	**envs(int size);
 
 /**
  * @brief Exits the minishell program.
@@ -573,5 +578,10 @@ void	mini_unset(t_shell *shell, char **argv);
  * @param status The exit status.
  */
 void	mini_exit(t_shell *shell, t_cmd *cmd);
+
+//--------------------export_utils----------------//
+int	check_env(t_shell *shell, const char *identifier, const char *arg);
+int	add_new_env(t_shell *shell, const char *arg);
+int	valid_identifier(const char *str);
 
 #endif

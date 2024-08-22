@@ -6,7 +6,7 @@
 /*   By: olyetisk <olyetisk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/20 16:04:00 by bgrhnzcn          #+#    #+#             */
-/*   Updated: 2024/08/21 18:50:27 by olyetisk         ###   ########.fr       */
+/*   Updated: 2024/08/22 13:53:33 by olyetisk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,6 @@ static void	handle_heredoc(const char *delimiter, t_cmd *cmd, int *status)
 	else
 	{
 		waitpid(pid, status, 0);
-		printf("%d\n",*status);
 		close(cmd->heredoc_pipe[1]);
 	}
 }
