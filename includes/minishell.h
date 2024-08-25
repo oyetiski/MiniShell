@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: olyetisk <olyetisk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: buozcan <buozcan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 22:45:16 by bgrhnzcn          #+#    #+#             */
-/*   Updated: 2024/08/22 16:40:16 by olyetisk         ###   ########.fr       */
+/*   Updated: 2024/08/25 15:12:25 by buozcan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@
 # define MAIN_P				0
 # define CHILD_P			1
 # define HEREDOC_P			2
+# define AFTER_IN_P			3
 
 /**
  * @def ANSI_COLOR_BLUE
@@ -80,10 +81,10 @@ static const char	g_whitespaces[7] = " \t\n\r\v\f";
  * @var g_token_type_str
  * Array of strings representing different token types.
  */
-static const char	g_token_type_str[13][20] = {
+static const char	g_token_type_str[14][20] = {
 	"HEAD",			"PIPE",		"OUTPUT",	"INPUT",		"APPEND",
 	"WORD",			"HEREDOC",	"QUOTE",	"DOUBLE_QUOTE",	"DOLLAR",
-	"WHITESPACE",	"COMMAND",	"TAIL"};
+	"QUOTED_DOLLAR", "WHITESPACE",	"COMMAND",	"TAIL"};
 
 /**
  * @enum t_token_type
@@ -101,6 +102,7 @@ typedef enum e_token_type
 	QUOTE,
 	DOUBLE_QUOTE,
 	DOLLAR,
+	QUOTED_DOLLAR,
 	WHITESPACE,
 	COMMAND,
 	TAIL
@@ -124,6 +126,7 @@ typedef struct s_token
  */
 typedef struct s_cmd
 {
+	pid_t	pid;
 	t_token	*redir_list;		/**< List of redirection tokens. */
 	char	**argv;				/**< Array of arguments for the command. */
 	int		fdin;				/**< File descriptor for input redirection. */
@@ -141,11 +144,11 @@ typedef struct s_shell
 	t_token	token_list;		/**< The list of tokens. */
 	char	**env;			/**< Array of environment variables. */
 	char	*input;			/**< The input string. */
-	pid_t	pid;			/**< Process ID of the shell. */
 	int		saved_stdin;	/**< Saved standard input file descriptor. */
 	int		saved_stdout;	/**< Saved standard output file descriptor. */
 	int		*pipes;			/**< Array of pipe file descriptors. */
 	int		status;			/**< Status of the last command. */
+	t_bool	is_heredoc_open;
 }	t_shell;
 
 //---------------------------- Tokenizer ---------------------------------
@@ -159,19 +162,19 @@ typedef struct s_shell
  */
 t_token	*new_token(t_token_type type, char *text);
 
-///**
-// * @brief Prints the details of a token.
-// *
-// * @param token The token to be printed.
-// */
-//void	print_token(t_token *token);
-//
-///**
-// * @brief Prints the details of all tokens in a token list.
-// *
-// * @param token_list The token list to be printed.
-// */
-//void	print_tokens(t_token *token_list);
+/**
+ * @brief Prints the details of a token.
+ *
+ * @param token The token to be printed.
+ */
+void	print_token(t_token *token);
+
+/**
+ * @brief Prints the details of all tokens in a token list.
+ *
+ * @param token_list The token list to be printed.
+ */
+void	print_tokens(t_token *token_list);
 
 /**
  * @brief Clears all tokens in a token list.
@@ -483,7 +486,7 @@ void	executer(t_shell *shell, char **argv);
  * It ensures that the parent process does not exit before all child processes
  * have completed their execution.
  */
-void	wait_all_childs(void);
+void	wait_all_childs(t_cmd *commands, int command_count);
 
 /**
  * @brief Gets the value of an environment variable.
