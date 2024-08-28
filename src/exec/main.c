@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: buozcan <buozcan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: olyetisk <olyetisk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/17 22:16:19 by bgrhnzcn          #+#    #+#             */
-/*   Updated: 2024/08/21 16:42:03 by buozcan          ###   ########.fr       */
+/*   Updated: 2024/08/26 16:20:39 by olyetisk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,8 +61,8 @@ char	*get_input(t_shell *shell)
 	char	*input;
 	char	*prompt;
 
+	signal_cont(MAIN_P);
 	prompt = create_prompt(shell);
-	printf(ANSI_COLOR_RED"readline_v: %s "ANSI_COLOR_RESET, rl_library_version);
 	input = readline(prompt);
 	if (input == NULL)
 		exit(3);
@@ -86,7 +86,7 @@ t_bool	parse(t_shell *shell)
 	if (check_syntax(&shell->token_list, shell->env))
 		return (clear_tokens(shell->token_list.next),
 			shell->token_list.next = NULL, EXIT_FAILURE);
-	perform_expansion(&shell->token_list, shell->env);
+	perform_expansion(&shell->token_list, shell->env, &shell->token_list, shell->token_list.next);
 	join_cont_words(&shell->token_list);
 	remove_whitespaces(&shell->token_list);
 	merge_redirs(&shell->token_list);
@@ -103,12 +103,12 @@ int	main(int argc, char **argv, char **envp)
 	init_shell(&shell, envp);
 	while (true)
 	{
-		signal_cont(MAIN_P);
 		if (shell.input != NULL)
 			free(shell.input);
 		shell.input = get_input(&shell);
 		if (ft_strequ(shell.input, ""))
 			continue ;
+		signal_cont(AFTER_IN_P);
 		add_history(shell.input);
 		if (parse(&shell))
 		{

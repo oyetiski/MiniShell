@@ -6,7 +6,7 @@
 /*   By: olyetisk <olyetisk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/20 17:08:54 by bgrhnzcn          #+#    #+#             */
-/*   Updated: 2024/08/22 14:50:42 by olyetisk         ###   ########.fr       */
+/*   Updated: 2024/08/26 14:56:44 by olyetisk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,15 +30,13 @@ int	valid_identifier(const char *str)
 	return (1);
 }
 
-static	char	*get_identifier(const char *arg)
+static	char	*get_identifier(char *arg)
 {
 	char	*equals_check;
 	char	*identifier;
 
-	equals_check = strchr(arg, '=');
-	if (!equals_check)
-		return (NULL);
-	identifier = strndup(arg, equals_check - arg);
+	equals_check = ft_strchr(arg, '=');
+	identifier = ft_substr(arg, 0, equals_check - arg);
 	if (!identifier || !valid_identifier(identifier))
 	{
 		free(identifier);
@@ -47,30 +45,31 @@ static	char	*get_identifier(const char *arg)
 	return (identifier);
 }
 
-void	mini_export(t_shell *shell, char **argv)
+void	mini_export(t_shell *shell, char **argv, int i, char *identifier)
 {
-	int		i;
-	char	*identifier;
-
-	i = 1;
 	while (argv[i])
 	{
 		identifier = get_identifier(argv[i]);
 		if (!identifier)
 		{
-			printf("export: not an identifier: %s\n", argv[i]);
+			ft_putstr_fd("minishell: export: '", STDERR_FILENO);
+			ft_putstr_fd(argv[i], STDERR_FILENO);
+			ft_putstr_fd("': not a valid identifier\n", STDERR_FILENO);
 			i++;
 			continue ;
 		}
-		if (!check_env(shell, identifier, argv[i]))
+		if (argv[i] != identifier)
 		{
-			if (!add_new_env(shell, argv[i]))
+			if (!check_env(shell, identifier, argv[i]))
 			{
-				free (identifier);
-				return ;
+				if (!add_new_env(shell, argv[i]))
+				{
+					free (identifier);
+					return ;
+				}
 			}
+			free (identifier);
 		}
-		free (identifier);
 		i++;
 	}
 }

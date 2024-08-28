@@ -1,4 +1,4 @@
-prefix=/Users/olyetisk/Desktop/olcishell/lib/readline-8.2
+prefix=/Users/olyetisk/Desktop/minishell/lib/readline-8.2
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include

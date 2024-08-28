@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: buozcan <buozcan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: olyetisk <olyetisk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 22:45:16 by bgrhnzcn          #+#    #+#             */
-/*   Updated: 2024/08/25 15:12:25 by buozcan          ###   ########.fr       */
+/*   Updated: 2024/08/26 16:00:04 by olyetisk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,6 +148,8 @@ typedef struct s_shell
 	int		saved_stdout;	/**< Saved standard output file descriptor. */
 	int		*pipes;			/**< Array of pipe file descriptors. */
 	int		status;			/**< Status of the last command. */
+	int		j;
+	int		k;
 	t_bool	is_heredoc_open;
 }	t_shell;
 
@@ -207,6 +209,10 @@ t_bool	add_token_last(t_token *tokens, t_token *token);
  * @return True if the token was added successfully, false otherwise.
  */
 t_bool	add_token_after(t_token *before, t_token *new);
+void	token_dollar2exitcode(t_token *dollar);
+void	create_joined_words(t_token *tokens);
+void	token_dollar2word(char **env, t_token *dollar);
+void	split_dollar(char *env, t_token *dollar);
 
 /**
  * @brief Removes a token from a token list.
@@ -267,7 +273,7 @@ void	merge_redirs(t_token *token_list);
  * @param token_list The token list.
  * @param env The array of environment variables.
  */
-void	perform_expansion(t_token *token_list, char **env);
+void	perform_expansion(t_token *token_list, char **env,t_token *temp, t_token *place_holder);
 
 /**
  * @brief Joins consecutive word tokens into a single token.
@@ -559,7 +565,7 @@ void	mini_echo(char **av);
  * @param shell The minishell structure.
  * @param argv The array of arguments.
  */
-void	mini_export(t_shell *shell, char **argv);
+void	mini_export(t_shell *shell, char **argv, int i, char *identifier);
 
 /**
  * @brief Removes an environment variable.
@@ -580,7 +586,7 @@ char	**envs(int size);
  * @param shell The minishell structure.
  * @param status The exit status.
  */
-void	mini_exit(t_shell *shell, t_cmd *cmd);
+void	mini_exit(t_shell *shell, t_cmd *cmd,int exit_status);
 
 //--------------------export_utils----------------//
 int	check_env(t_shell *shell, const char *identifier, const char *arg);

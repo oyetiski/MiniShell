@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   commands.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bgrhnzcn <bgrhnzcn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: olyetisk <olyetisk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 17:37:58 by bgrhnzcn          #+#    #+#             */
-/*   Updated: 2024/08/20 17:28:38 by bgrhnzcn         ###   ########.fr       */
+/*   Updated: 2024/08/26 15:47:26 by olyetisk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int	buildins(t_shell *shell, t_cmd *cmd)
 	save_std_io(shell);
 	if (ft_strequ(cmd->argv[0], "exit") && !apply_redirs(cmd))
 	{
-		mini_exit(shell, cmd);
+		mini_exit(shell, cmd, 0);
 		return (restore_std_io(shell), EXIT_SUCCESS);
 	}
 	if (ft_strequ(cmd->argv[0], "env") && !apply_redirs(cmd))
@@ -43,7 +43,7 @@ int	buildins(t_shell *shell, t_cmd *cmd)
 	else if (ft_strequ(cmd->argv[0], "cd") && !apply_redirs(cmd))
 		mini_cd(shell->env, cmd->argv[1]);
 	else if (ft_strequ(cmd->argv[0], "export") && !apply_redirs(cmd))
-		mini_export(shell, cmd->argv);
+		mini_export(shell, cmd->argv, 1, NULL);
 	else if (ft_strequ(cmd->argv[0], "unset") && !apply_redirs(cmd))
 		mini_unset(shell, cmd->argv);
 	else if (ft_strequ(cmd->argv[0], "echo") && !apply_redirs(cmd))

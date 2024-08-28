@@ -6,7 +6,7 @@
 /*   By: olyetisk <olyetisk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/20 16:04:00 by bgrhnzcn          #+#    #+#             */
-/*   Updated: 2024/08/22 13:53:33 by olyetisk         ###   ########.fr       */
+/*   Updated: 2024/08/26 16:19:48 by olyetisk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,12 @@ static void	handle_heredoc_hlpr(t_cmd *cmd, const char *delimiter)
 	char	*line;
 
 	close(cmd->heredoc_pipe[0]);
-	signal_cont(HEREDOC_P);
 	while (1)
 	{
+		signal_cont(HEREDOC_P);
 		line = readline("> ");
 		if (g_global_exit == 999)
-			exit(EXIT_FAILURE);
+			exit(2);
 		if (ft_strequ(line, delimiter))
 		{
 			free(line);
@@ -51,9 +51,7 @@ static void	handle_heredoc(const char *delimiter, t_cmd *cmd, int *status)
 	}
 	pid = fork();
 	if (pid == 0)
-	{
 		handle_heredoc_hlpr(cmd, delimiter);
-	}
 	else
 	{
 		waitpid(pid, status, 0);
@@ -72,10 +70,9 @@ int	get_heredoc(t_cmd *cmd)
 	{
 		if (temp->type == HEREDOC)
 			handle_heredoc(temp->text + 2, cmd, &status);
-		if (status == EXIT_FAILURE)
-			return(EXIT_FAILURE);
+		if (status >> 8 == 2)
+			return (EXIT_FAILURE);
 		temp = temp->next;
-		printf("%d\n",status);
 	}
 	return (EXIT_SUCCESS);
 }

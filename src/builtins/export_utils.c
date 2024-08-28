@@ -6,7 +6,7 @@
 /*   By: olyetisk <olyetisk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/22 14:02:40 by olyetisk          #+#    #+#             */
-/*   Updated: 2024/08/22 14:45:07 by olyetisk         ###   ########.fr       */
+/*   Updated: 2024/08/26 14:44:58 by olyetisk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,33 +41,38 @@ static	int	update_env_var(t_shell *shell, int j, const char *arg)
 	free(shell->env[j]);
 	new_env_var = strdup(arg);
 	if (!new_env_var)
-		return 0;
+		return (0);
 	shell->env[j] = new_env_var;
 	return (1);
 }
 
 int	check_env(t_shell *shell, const char *identifier, const char *arg)
 {
-	int j;
+	int	j;
 
-	j = find_existing_env_var(shell, identifier); // Identifier'ın indis yerini bul
+	j = find_existing_env_var(shell, identifier);
 	if (j != -1)
-		return (update_env_var(shell, j, arg)); // Eğer indeks bulunduysa, değişkeni güncelle
-	return 0; // Eğer identifier bulunamazsa 0 döndür
+		return (update_env_var(shell, j, arg));
+	return (0);
 }
+
 int	add_new_env(t_shell *shell, const char *arg)
 {
 	int		env_count;
 	char	**new_env;
 
+	shell->j = 0;
 	env_count = 0;
 	while (shell->env[env_count])
 		env_count++;
 	new_env = malloc(sizeof(char *) * (env_count + 2));
 	if (!new_env)
 		return (0);
-	for (int j = 0; j < env_count; j++)
-		new_env[j] = shell->env[j];
+	while (shell->j < env_count)
+	{
+		new_env[shell->j] = shell->env[shell->j];
+		shell->j++;
+	}
 	new_env[env_count] = strdup(arg);
 	if (!new_env[env_count])
 	{

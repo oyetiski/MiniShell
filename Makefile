@@ -32,6 +32,7 @@ SRCS = $(SRC)/exec/main.c \
 	$(SRC)/parse/quotes.c \
 	$(SRC)/parse/syntax.c \
 	$(SRC)/parse/expansion.c \
+	$(SRC)/parse/expansion_utils.c \
 	$(SRC)/parse/argv.c \
 	$(SRC)/parse/commands.c \
 	$(SRC)/parse/parse_utils.c \

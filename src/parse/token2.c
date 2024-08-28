@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   token2.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bgrhnzcn <bgrhnzcn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: olyetisk <olyetisk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/14 09:50:22 by bgrhnzcn          #+#    #+#             */
-/*   Updated: 2024/08/08 22:39:55 by bgrhnzcn         ###   ########.fr       */
+/*   Updated: 2024/08/26 16:19:22 by olyetisk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,4 +55,18 @@ t_bool	add_token_last(t_token *token_list, t_token *token)
 	temp->next = token;
 	token->prev = temp;
 	return (EXIT_SUCCESS);
+}
+
+void	clear_tokens(t_token *token_list)
+{
+	t_token	*token;
+	t_token	*temp;
+
+	token = token_list;
+	while (token != NULL)
+	{
+		temp = token->next;
+		destroy_token(token);
+		token = temp;
+	}
 }

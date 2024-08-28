@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   token.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bgrhnzcn <bgrhnzcn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: olyetisk <olyetisk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 14:31:46 by buozcan           #+#    #+#             */
-/*   Updated: 2024/08/20 16:11:12 by bgrhnzcn         ###   ########.fr       */
+/*   Updated: 2024/08/26 16:18:02 by olyetisk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,40 +54,26 @@ void	destroy_token(t_token *token)
 	free(token);
 }
 
-//void	print_token(t_token *token)
-//{
-//	printf(
-//			"[ INFO ] Token\n{\n\t.type\t= %s,\n\t.text\t= %s,\n\t.adress\t= %p,\n\t.next\t= %p,\n\t.prev\t= %p\n}\n",
-//			g_token_type_str[token->type],
-//			token->text,
-//			token,
-//			token->next,
-//			token->prev
-//			);
-//}
-
-//void	print_tokens(t_token *token_list)
-//{
-//	t_token	*temp;
-//
-//	temp = token_list;
-//	while (temp != NULL)
-//	{
-//		print_token(temp);
-//		temp = temp->next;
-//	}
-//}
-
-void	clear_tokens(t_token *token_list)
+void	print_token(t_token *token)
 {
-	t_token	*token;
+	printf(
+		"[ INFO ] Token\n{\n\t.type\t= %s,\n\t.text\t= %s,\n\t.adress\t= %p,\n\t.next\t= %p,\n\t.prev\t= %p\n}\n",
+		g_token_type_str[token->type],
+		token->text,
+		token,
+		token->next,
+		token->prev
+		);
+}
+
+void	print_tokens(t_token *token_list)
+{
 	t_token	*temp;
 
-	token = token_list;
-	while (token != NULL)
+	temp = token_list;
+	while (temp != NULL)
 	{
-		temp = token->next;
-		destroy_token(token);
-		token = temp;
+		print_token(temp);
+		temp = temp->next;
 	}
 }

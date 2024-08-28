@@ -3,16 +3,41 @@
 /*                                                        :::      ::::::::   */
 /*   expansion.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bgrhnzcn <bgrhnzcn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: olyetisk <olyetisk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 16:42:59 by bgrhnzcn          #+#    #+#             */
-/*   Updated: 2024/08/20 19:17:35 by bgrhnzcn         ###   ########.fr       */
+/*   Updated: 2024/08/26 16:02:38 by olyetisk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void	token_dollar2word(char **env, t_token *dollar)
+void	split_dollar(char *env, t_token *dollar)
+{
+	t_token	*temp;
+	char	**split;
+	int		i;
+
+	temp = dollar;
+	env = ft_strchr(env, '=');
+	if (env + 1 == NULL)
+	{
+		dollar->type = WORD;
+		return ;
+	}
+	split = ft_split(env + 1, ' ');
+	i = 0;
+	while (split[i])
+	{
+		add_token_after(temp, new_token(WHITESPACE, ft_strdup(" ")));
+		add_token_after(temp, new_token(WORD, ft_strdup(split[i])));
+		temp = temp->next->next;
+		i++;
+	}
+	ft_free_str_arr(split);
+}
+
+static void	token_quoted_dollar2word(char **env, t_token *dollar)
 {
 	char	*temp;
 	char	*curr_text;
@@ -23,47 +48,42 @@ static void	token_dollar2word(char **env, t_token *dollar)
 		return ;
 	}
 	temp = get_env(env, dollar->text + 1);
-	curr_text = dollar->text;
-	dollar->text = ft_substr(temp, ft_strlen(curr_text),
-			ft_strlen(temp) - ft_strlen(curr_text));
-	if (dollar->text == NULL)
+	if (!ft_strequ(temp, ""))
 	{
-		dollar->text = curr_text;
-		printf("Error occured while converting dollar symbols\n");
+		curr_text = ft_strchr(temp, '=') + 1;
+		dollar->text = ft_strdup(curr_text);
 	}
 	else
-		free(curr_text);
+		dollar->text = ft_strdup(temp);
 	free(temp);
 	dollar->type = WORD;
 }
 
-static void	create_joined_words(t_token *tokens)
+void	perform_expansion(t_token *token_list, char **env, \
+t_token *temp, t_token *place)
 {
-	t_token	*temp;
-	char	*temp_text;
-
-	temp = tokens->next;
-	while (temp->type == WORD)
-	{
-		temp_text = ft_strjoin(tokens->text, temp->text);
-		if (temp_text == NULL)
-			printf("Error encountered while word collaping.\n");
-		destroy_token(remove_token(tokens, temp));
-		free(tokens->text);
-		tokens->text = temp_text;
-		temp = tokens->next;
-	}
-}
-
-void	perform_expansion(t_token *token_list, char **env)
-{
-	t_token	*temp;
-
 	temp = token_list;
 	while (temp != NULL)
 	{
+		place = temp->next;
 		if (temp->type == DOLLAR)
+		{
+			if (ft_strequ(temp->text + 1, "?"))
+			{
+				token_dollar2exitcode(temp);
+				continue ;
+			}
 			token_dollar2word(env, temp);
+			if (temp->type == WORD || temp->type == WHITESPACE)
+				continue ;
+			temp->prev->next = temp->next;
+			temp->next->prev = temp->prev;
+			destroy_token(remove_token(token_list, temp));
+			temp = place;
+			continue ;
+		}
+		if (temp->type == QUOTED_DOLLAR)
+			token_quoted_dollar2word(env, temp);
 		temp = temp->next;
 	}
 }

@@ -3,14 +3,22 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bgrhnzcn <bgrhnzcn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: olyetisk <olyetisk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/20 17:13:02 by bgrhnzcn          #+#    #+#             */
-/*   Updated: 2024/08/03 23:28:18 by bgrhnzcn         ###   ########.fr       */
+/*   Updated: 2024/08/26 14:57:16 by olyetisk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+static void	cd_print_err(char *path, char *err)
+{
+	ft_putstr_fd("minishell: cd: ", STDERR_FILENO);
+	ft_putstr_fd(path, STDERR_FILENO);
+	ft_putstr_fd(": ", STDERR_FILENO);
+	ft_putendl_fd(err, STDERR_FILENO);
+}
 
 static void	cd_home(char **env)
 {
@@ -20,12 +28,12 @@ static void	cd_home(char **env)
 	home = get_env(env, "HOME");
 	if (home == NULL)
 	{
-		printf("minishell: cd: HOME not set\n");
+		ft_putstr_fd("minishell: cd: HOME not set\n", STDERR_FILENO);
 		return ;
 	}
 	if (chdir(home + 5))
 	{
-		printf("minishell: cd: %s: %s\n", home, strerror(errno));
+		cd_print_err(home, strerror(errno));
 		return ;
 	}
 	pwd = get_env(env, "PWD");
@@ -35,14 +43,14 @@ static void	cd_home(char **env)
 	free(pwd);
 }
 
-static void	cd_abs_path(char ** env, char *path)
+static void	cd_abs_path(char **env, char *path)
 {
 	char	*temp;
 	char	*pwd;
 
 	if (chdir(path))
 	{
-		printf("minishell: cd: %s: %s\n", path, strerror(errno));
+		cd_print_err(path, strerror(errno));
 		return ;
 	}
 	pwd = get_env(env, "PWD");
@@ -53,14 +61,14 @@ static void	cd_abs_path(char ** env, char *path)
 	free(temp);
 }
 
-static void	cd_rel_path(char ** env, char *path)
+static void	cd_rel_path(char **env, char *path)
 {
 	char	*temp;
 	char	*pwd;
 
 	if (chdir(path))
 	{
-		printf("minishell: cd: %s: %s\n", path, strerror(errno));
+		cd_print_err(path, strerror(errno));
 		return ;
 	}
 	pwd = get_env(env, "PWD");
@@ -73,10 +81,8 @@ static void	cd_rel_path(char ** env, char *path)
 
 void	mini_cd(char **env, char *path)
 {
-	//default path
 	if (path == NULL)
 		cd_home(env);
-	//absolute path
 	else if (path[0] == '/')
 		cd_abs_path(env, path);
 	else

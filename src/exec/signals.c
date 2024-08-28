@@ -9,9 +9,20 @@ static void	ft_main_signal(int signal)
 		rl_on_new_line();
 		rl_replace_line("", 0);
 		rl_redisplay();
-		g_global_exit = 1;
+		g_global_exit = 999;
 	}
 }
+
+static void	ft_main_after_in_signal(int signal)
+{
+	if (signal == SIGINT)
+	{
+		ft_putchar_fd('\n', STDOUT_FILENO);
+		rl_replace_line("", 0);
+		g_global_exit = 999;
+	}
+}
+
 static void	ft_heredoc_signal(int signal)
 {
 	if (signal == SIGINT)
@@ -20,10 +31,11 @@ static void	ft_heredoc_signal(int signal)
 		ioctl(STDIN_FILENO, TIOCSTI, "\n");
 		rl_replace_line("", 0);
 		rl_on_new_line();
+		rl_redisplay();
 	}
 }
 
-void signal_cont(int status)
+void	signal_cont(int status)
 {
 	if (status == MAIN_P)
 	{
@@ -38,6 +50,11 @@ void signal_cont(int status)
 	else if (status == HEREDOC_P)
 	{
 		signal(SIGINT, &ft_heredoc_signal);
+		signal(SIGQUIT, SIG_IGN);
+	}
+	else if (status == AFTER_IN_P)
+	{
+		signal(SIGINT, &ft_main_after_in_signal);
 		signal(SIGQUIT, SIG_IGN);
 	}
 }
