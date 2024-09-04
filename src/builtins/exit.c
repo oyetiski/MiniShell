@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: olyetisk <olyetisk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: buozcan <buozcan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/01 16:35:55 by bgrhnzcn          #+#    #+#             */
-/*   Updated: 2024/08/26 17:00:49 by olyetisk         ###   ########.fr       */
+/*   Updated: 2024/09/02 12:56:34 by buozcan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,17 +30,10 @@ static int	str_isdigit(char *str)
 	}
 	return (free(temp), 0);
 }
-void exit_free(t_shell *shell)
-{
-	if (shell->env)
-		ft_free_str_arr(shell->env);
-	if (shell->input)
-		free (shell->input);
-}
 
-void	mini_exit(t_shell *shell, t_cmd *cmd,int exit_status)
+void	mini_exit(t_shell *shell, t_cmd *cmd)
 {
-	if (cmd->argv[1] != NULL)
+	if (cmd->argv[1])
 	{
 		if (cmd->argv[2] != NULL)
 		{
@@ -53,15 +46,14 @@ void	mini_exit(t_shell *shell, t_cmd *cmd,int exit_status)
 			ft_putstr_fd("bash: exit: ", STDERR_FILENO);
 			ft_putstr_fd(cmd->argv[1], STDERR_FILENO);
 			ft_putstr_fd(": numeric argument required\n", STDERR_FILENO);
-			if (shell->env)
-				ft_free_str_arr(shell->env);
-			if (shell->input)
-				free(shell->input);
-			exit(2);
+			ft_free_str_arr(shell->env);
+			free(shell->input);
+			exit(255);
 		}
-		exit_status = ft_atoi(cmd->argv[1]);
+		g_global_exit = ft_atoi(cmd->argv[1]);
 	}
-	exit_free(shell);
 	printf("exit\n");
+	ft_free_str_arr(shell->env);
+	free(shell->input);
 	exit(g_global_exit);
 }

@@ -5,32 +5,39 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: olyetisk <olyetisk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/26 15:55:15 by olyetisk          #+#    #+#             */
-/*   Updated: 2024/08/26 16:01:08 by olyetisk         ###   ########.fr       */
+/*   Created: 2024/08/20 16:13:49 by bgrhnzcn          #+#    #+#             */
+/*   Updated: 2024/08/29 18:59:58 by olyetisk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	token_dollar2word(char **env, t_token *dollar)
+void	split_dollar(char *env, t_token *dollar)
 {
-	char	*temp;
+	t_token	*temp;
+	char	**split;
+	int		i;
+	int		max;
 
-	if (ft_strequ(dollar->text, "$"))
+	temp = dollar;
+	env = ft_strchr(env, '=');
+	if (env + 1 == NULL)
 	{
 		dollar->type = WORD;
 		return ;
 	}
-	temp = get_env(env, dollar->text + 1);
-	if (ft_strequ(temp, ""))
+	split = ft_split(env + 1, ' ');
+	max = ft_strarrlen(split);
+	i = 0;
+	while (split[i])
 	{
-		dollar->type = WHITESPACE;
-		return ;
+		if (max > 1)
+			add_token_after(temp, new_token(WHITESPACE, ft_strdup(" ")));
+		add_token_after(temp, new_token(WORD, ft_strdup(split[i])));
+		temp = temp->next->next;
+		i++;
 	}
-	split_dollar(temp, dollar);
-	if (dollar->text == NULL)
-		dollar->text = ft_strdup("");
-	free(temp);
+	ft_free_str_arr(split);
 }
 
 void	create_joined_words(t_token *tokens)
@@ -51,8 +58,41 @@ void	create_joined_words(t_token *tokens)
 	}
 }
 
-void	token_dollar2exitcode(t_token *dollar)
+void	join_cont_words(t_token *token_list)
 {
-	dollar->type = WORD;
-	dollar->text = ft_itoa(g_global_exit);
+	t_token	*temp;
+
+	temp = token_list;
+	while (temp != NULL)
+	{
+		if (temp->type == WORD)
+			create_joined_words(temp);
+		temp = temp->next;
+	}
+}
+
+void	merge_redirs(t_token *token_list)
+{
+	t_token	*temp;
+	t_token	*temp2;
+	char	*temp_text;
+
+	temp = token_list;
+	while (temp != NULL)
+	{
+		if (temp->type == INPUT
+			|| temp->type == APPEND
+			|| temp->type == OUTPUT
+			|| temp->type == HEREDOC)
+		{
+			temp_text = ft_strjoin(temp->text, temp->next->text);
+			free(temp->text);
+			temp->text = temp_text;
+			temp2 = temp->next->next;
+			destroy_token(remove_token(temp, temp->next));
+			temp->next = temp2;
+			temp2->prev = temp;
+		}
+		temp = temp->next;
+	}
 }

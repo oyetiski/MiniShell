@@ -1,28 +1,42 @@
+NAME = minishell
+
 CC = gcc
 
-CFLAGS = -g -Wall -Wextra -Werror -I./includes/ -I./lib/libft/ -I./lib/readline-8.2/include/
-#-fsanitize=address
-DYLIBS = -lreadline
+OBJ = obj
+
+SRC = src
+
+CFLAGS = -Wall -Wextra -Werror
+
+READLINE_DIR = ./lib/readline-8.2
+
+READLINE_V = $(READLINE_DIR)/lib/libreadline.a
+
+LIBFT_DIR = ./lib/libft
+
+LIBFT = $(LIBFT_DIR)/libft.a
+
+INCLUDES = -I$(READLINE_DIR)/include -I$(LIBFT_DIR) -I./includes/
+
+DYLIBS = -L$(READLINE_DIR)/lib -lreadline
 
 ifeq ($(shell uname), Linux)
 	DYLIBS += -ltinfo
 endif
 
-SRC = src
-
-OBJ = obj
-
 SRCS = $(SRC)/exec/main.c \
+	$(SRC)/exec/main_utils.c \
 	$(SRC)/exec/exec.c \
-	$(SRC)/exec/signals.c \
 	$(SRC)/exec/exec_utils.c \
+	$(SRC)/exec/exec_err.c \
+	$(SRC)/exec/signals.c \
 	$(SRC)/builtins/env.c \
 	$(SRC)/builtins/pwd.c \
 	$(SRC)/builtins/exit.c \
 	$(SRC)/builtins/cd.c \
+	$(SRC)/builtins/cd_utils.c \
 	$(SRC)/builtins/unset.c \
 	$(SRC)/builtins/unset_utils.c \
-	$(SRC)/builtins/unset_utils2.c \
 	$(SRC)/builtins/export.c \
 	$(SRC)/builtins/export_utils.c \
 	$(SRC)/builtins/echo.c \
@@ -35,66 +49,56 @@ SRCS = $(SRC)/exec/main.c \
 	$(SRC)/parse/expansion_utils.c \
 	$(SRC)/parse/argv.c \
 	$(SRC)/parse/commands.c \
-	$(SRC)/parse/parse_utils.c \
 	$(SRC)/io_operations/pipe.c \
 	$(SRC)/io_operations/io_utils.c \
 	$(SRC)/io_operations/redirections.c \
 	$(SRC)/io_operations/heredoc.c \
 
-NAME = minishell
-
 OBJS = $(SRCS:$(SRC)/%.c=$(OBJ)/%.o)
-
-$(OBJ)/%.o: $(SRC)/%.c
-	$(CC) $(CFLAGS) -o $@ -c -I./lib/readline-8.2/include $? 
 
 all: $(NAME)
 
-READLINE_V = lib/readline-8.2/lib/libreadline.a
+$(OBJ):
+	@mkdir obj
+	@mkdir obj/parse
+	@mkdir obj/exec
+	@mkdir obj/io_operations
+	@mkdir obj/builtins
 
-LIBFT = lib/libft/libft.a
-
-$(NAME): $(READLINE_V) $(LIBFT) $(OBJS)
-	$(CC) $(CFLAGS) -o $(NAME) -L./lib/readline-8.2/lib -lreadline -I./lib/readline-8.2/include $(OBJS) $(LIBFT)
-
-$(LIBFT):
-	make -C lib/libft && make -C lib/libft clean
+$(READLINE_DIR):
+	@echo "Downloading Readline-8.2..."
+	@curl https://ftp.gnu.org/gnu/readline/readline-8.2.tar.gz -o readline-8.2.tar.gz 2>&1 | awk '{printf "."; fflush()}'
+	@echo ""
+	@mkdir ./lib/readline-8.2
+	@tar xvfz readline-8.2.tar.gz > /dev/null 2> /dev/null
+	@rm readline-8.2.tar.gz
 
 clean:
-	cd $(SRC) && rm -rf builtins/*.o debug/*.o \
-						parse/*.o io_operations/*.o exec/*.o *.o
-	make -C lib/libft fclean
+	@rm -rf $(OBJ)
+	@make -C lib/libft fclean
 
 fclean: clean
-	rm -f ${NAME}
+	@rm -f ${NAME}
 
 re: fclean all
 
 run: $(NAME)
-	./minishell
+	@./minishell
 
-$(READLINE_V):
-	@if [ ! -d "./lib/readline-8.2" ]; then\
-		echo "Downloading Readline-8.2...";\
-		curl https://ftp.gnu.org/gnu/readline/readline-8.2.tar.gz -o readline-8.2.tar.gz;\
-		mkdir ./lib/readline-8.2;\
-		tar xvfz readline-8.2.tar.gz > /dev/null 2> /dev/null;\
-		rm readline-8.2.tar.gz;\
-	fi;\
-	if [ ! -f "./$(READLINE_V)" ]; then\
-		echo "Compiling Readline-8.2...";\
-		cd readline-8.2 && ./configure --prefix=$(PWD)/lib/readline-8.2 2>&1 | awk '{printf "."; fflush()}';\
-		cd .. && make -C readline-8.2 install 2>&1 | awk '{printf "."; fflush()}';\
-		rm -rf readline-8.2;\
-	fi;
+$(OBJ)/%.o: $(SRC)/%.c | $(OBJ)
+	$(CC) $(CFLAGS) -o $@ -c $(INCLUDES) $?
 
-ifeq ($(shell uname), Linux)
-leak: re
-	@valgrind --leak-check=full --track-origins=yes ./minishell
-else
-leak: re
-	@bash ./minishell.sh
-	@make run
-endif
+$(LIBFT):
+	@make -C lib/libft && make -C lib/libft clean
+
+$(NAME): $(READLINE_V) $(LIBFT) $(OBJS)
+	$(CC) $(CFLAGS) -o $(NAME) $(INCLUDES) $(OBJS) $(DYLIBS) $(LIBFT)
+
+$(READLINE_V): | $(READLINE_DIR)
+	@echo "Compiling Readline-8.2..."
+	@cd readline-8.2 && ./configure --prefix=$(PWD)/$(READLINE_DIR) 2>&1 | awk '{printf "."; fflush()}'
+	@cd readline-8.2 && make install 2>&1 | awk '{printf "."; fflush()}'
+	@printf "\n"
+	@rm -rf readline-8.2
 
 .PHONY: all re fclean clean

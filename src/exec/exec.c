@@ -6,7 +6,7 @@
 /*   By: buozcan <buozcan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/14 21:44:58 by bgrhnzcn          #+#    #+#             */
-/*   Updated: 2024/08/25 15:24:14 by buozcan          ###   ########.fr       */
+/*   Updated: 2024/09/02 13:02:17 by buozcan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,12 @@
 
 t_bool	single_command(t_shell *shell, t_cmd *cmd)
 {
-	int status;
+	int	status;
 
 	g_global_exit = 0;
 	if (get_redirs(cmd))
+		return (EXIT_FAILURE);
+	if (g_global_exit == 130)
 		return (EXIT_FAILURE);
 	if (cmd != NULL && !buildins(shell, cmd))
 		return (EXIT_SUCCESS);
@@ -31,19 +33,10 @@ t_bool	single_command(t_shell *shell, t_cmd *cmd)
 				executer(shell, cmd->argv);
 			free_cmd(cmd);
 		}
-		exit(127);
+		exit(g_global_exit);
 	}
 	waitpid(cmd->pid, &status, 0);
-	if (WIFEXITED(status))
-	{
-		g_global_exit = WEXITSTATUS(status);
-		return (EXIT_SUCCESS);
-	}
-	else if (WIFSIGNALED(status))
-	{
-			g_global_exit = 128 + WTERMSIG(status);
-			return (EXIT_SUCCESS);
-	}
+	process_exit_code(status);
 	return (EXIT_SUCCESS);
 }
 
@@ -78,26 +71,21 @@ static char	*search_in_path(const char *path, const char *command)
 static void	execute_relative(t_shell *shell, char **argv)
 {
 	int		err;
-	char	*pwd;
 	char	*cmd;
 	char	*temp;
 
-	if (ft_strchr(argv[0], '/') == argv[0])
-		pwd = ft_strdup("");
-	else
-		pwd = get_env(shell->env, "PWD");
-	temp = ft_strjoin(pwd + 4, "/");
-	free(pwd);
+	set_cmd_and_temp(shell, &cmd, &temp, argv);
+	free(cmd);
 	cmd = ft_strjoin(temp, argv[0]);
 	free(temp);
-	if (execve(cmd, argv, shell->env))
+	if (!is_dir(cmd, argv[0]) && execve(cmd, argv, shell->env))
 	{
 		err = errno;
 		print_error(argv[0], err);
 		if (err == ENOENT)
-			shell->status = 127;
+			g_global_exit = 127;
 		else if (err == EACCES)
-			shell->status = 126;
+			g_global_exit = 126;
 	}
 	free(cmd);
 }
@@ -106,23 +94,25 @@ static void	execute_path(t_shell *shell, char **argv)
 {
 	char	**paths;
 	char	*cmd;
-	paths = split_path(shell);
 	int		path_index;
 
 	path_index = 0;
-	while (paths[path_index] != NULL)
+	paths = split_path(shell);
+	while (paths != NULL && paths[path_index] != NULL)
 	{
 		cmd = search_in_path(paths[path_index++], argv[0]);
 		if (cmd != NULL)
 			break ;
 	}
+	if (paths == NULL)
+		cmd = ft_strdup(argv[0]);
 	ft_free_str_arr(paths);
-	if (cmd == NULL || execve(cmd, argv, shell->env))
+	if (execve(cmd, argv, shell->env))
 	{
 		ft_putstr_fd("Command \'", STDERR_FILENO);
 		ft_putstr_fd(argv[0], STDERR_FILENO);
 		ft_putstr_fd("\' not found.\n", STDERR_FILENO);
-		shell->status = 127;
+		g_global_exit = 127;
 	}
 	free(cmd);
 }
@@ -133,6 +123,4 @@ void	executer(t_shell *shell, char **argv)
 		execute_relative(shell, argv);
 	else
 		execute_path(shell, argv);
-	ft_free_str_arr(argv);
-	exit(127);
 }
